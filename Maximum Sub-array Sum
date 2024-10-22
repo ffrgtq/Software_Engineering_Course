@@ -1,0 +1,60 @@
+
+class MSA:
+    """
+    Maximum Sub-array Sum
+    """
+    def __init__(self,file_name):
+        self.file_name = file_name
+
+    def read_nums_from_txt(self):
+        numList = []
+        numLists = []
+        line_num = 1
+        with open(self.file_name, "r",encoding="utf-8") as f:
+            lines = [line for line in f.readlines() if line.strip()]   #在读取文件的这一步进行空行处理推导，注意strip的返回值判定
+            for line in lines:
+                line_num += 1
+                for num in line.split(":")[1].split(","):   #注意txt中空行会被识别为包含换行符的行
+                    try:
+                        numList.append(int(num))
+                    except ValueError:
+                        # print(f"第{line_num}行包含非法字符串，无法被识别为数字")
+                        numList = []   #如果出现值错误无法识别，返回空列表
+                        break
+                numLists.append(numList)
+                numList = []
+        return numLists
+
+    def calc(self,test_list):
+        max_sum = 0
+        current_sum = 0
+        startI = 0
+        endI = 0
+        for i in range(0,len(test_list)):
+            for j in range(i+1,len(test_list)):
+                current_sum += test_list[j]
+                if current_sum > max_sum:
+                    max_sum = current_sum
+                    startI = i
+                    endI = j
+        return max_sum,startI,endI
+
+def main():
+    file_name = "num.txt"
+    msa = MSA(file_name)
+    numLists = msa.read_nums_from_txt()  #从txt中读取测试数据，并置入二维数组
+    row = 1
+    for numList in numLists:
+        # print(numList)
+        if numList:    #确保列表非空
+            answer = msa.calc(numList)
+            print(f"第{row}组测试数据的最大子数组和以及起始/结束索引位置为：{answer}")
+        else:
+            print(f"第{row}行包含非法字符串，无法被识别为数字")
+            row += 1
+            continue
+        row += 1
+
+if __name__ == '__main__':
+    main()
+#这个算法时间复杂度为O(n**2)，仍有优化空间
